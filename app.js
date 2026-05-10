@@ -35,8 +35,9 @@ function init() {
     loadQuestions();
     
     // 画面の高さに合わせて、全1600年（500-2100）がピッタリ収まる高さを計算
-    const availableHeight = mainDisplayArea.clientHeight;
-    YEAR_HEIGHT = availableHeight / 1610; // 少しだけ余裕を持たせる
+    // ブラウザのメニューバー等を考慮し、40px（約1cm）ほど手前で終わるように余裕を持たせる
+    const availableHeight = mainDisplayArea.clientHeight - 40;
+    YEAR_HEIGHT = availableHeight / 1600;
     
     // 左側の世紀ブロックの高さも動的に調整（100年分 = blockHeight）
     const blockHeight = YEAR_HEIGHT * 100;
