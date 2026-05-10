@@ -26,25 +26,31 @@ const yearDisplay = document.getElementById('selected-year-display');
 const okButton = document.getElementById('ok-button');
 const overlay = document.getElementById('judge-overlay');
 
-// 定数 (1年あたりの高さ。0.38pxに圧縮してスマホでの全時代表示を狙う)
-const YEAR_HEIGHT = 0.38; 
+// 動的に計算される定数
+let YEAR_HEIGHT = 0.35; 
 const STORAGE_KEY = 'chronos_timeline_progress';
 
 // 初期化
 function init() {
     loadQuestions();
     
+    // 画面の高さに合わせて、全1600年（500-2100）がピッタリ収まる高さを計算
+    const availableHeight = mainDisplayArea.clientHeight;
+    YEAR_HEIGHT = availableHeight / 1610; // 少しだけ余裕を持たせる
+    
+    // 左側の世紀ブロックの高さも動的に調整（100年分 = blockHeight）
+    const blockHeight = YEAR_HEIGHT * 100;
+    document.documentElement.style.setProperty('--block-height', `${blockHeight}px`);
+
     // 中断データがあるか確認
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved && questions.length > 0) {
         try {
             const data = JSON.parse(saved);
-            // 埋め込まれた問題セットと同じかチェック（簡易的に件数で）
             if (data.questions && data.questions.length === questions.length) {
                 if (confirm("前回の続きから再開しますか？")) {
                     questions = data.questions;
                     currentQuestionIndex = data.index;
-                    // すでに正解したラベルを配置
                     questions.slice(0, currentQuestionIndex).forEach(q => {
                         placeLabel(parseInt(q.a), q.q, q.result, true);
                     });
@@ -77,7 +83,6 @@ function loadQuestions() {
         const dataText = document.getElementById('question-data').textContent;
         const cleanJson = dataText.replace(/\/\*[\s\S]*?\*\//g, '');
         const rawData = JSON.parse(cleanJson);
-        // 元の順序を記憶させつつ、出題用にシャッフル
         questions = rawData.map((q, i) => ({ ...q, originalIndex: i, result: null }));
         questions.sort(() => Math.random() - 0.5);
     } catch (e) {
@@ -121,7 +126,6 @@ function generateTimeline() {
         block.addEventListener('click', () => selectCentury(c));
         timelineWrapper.appendChild(block);
 
-        // メインエリアに薄い区切り線
         const hr = document.createElement('div');
         hr.style.position = 'absolute';
         hr.style.top = `${(c - 500) * YEAR_HEIGHT}px`;
@@ -245,7 +249,7 @@ function judge(isForcedNG = false) {
     placeLabel(correctYear, q.q, isCorrect);
     
     currentQuestionIndex++;
-    saveProgress(); // 進捗保存
+    saveProgress();
 
     setTimeout(() => {
         showQuestion();
@@ -253,8 +257,7 @@ function judge(isForcedNG = false) {
 }
 
 function showFinalResults() {
-    localStorage.removeItem(STORAGE_KEY); // 完了したら削除
-
+    localStorage.removeItem(STORAGE_KEY);
     const sorted = [...questions].sort((a, b) => a.originalIndex - b.originalIndex);
     
     let resultText = "【歴史年号テスト結果】\n";
