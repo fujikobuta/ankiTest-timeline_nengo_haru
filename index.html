@@ -39,14 +39,20 @@
         <div id="judge-overlay"></div>
     </div>
 
-    <!-- 下部：問題エリア -->
+    <!-- 下部：スリム操作パネル -->
     <div id="bottom-panel">
-        <div id="progress-counter">0 / 0</div>
-        <div id="question-text">読み込み中...</div>
-        <div id="selected-year-display">???? 年</div>
-        <div id="button-group">
-            <button id="ng-button">NG</button>
-            <button id="ok-button" disabled>OK</button>
+        <!-- 上段：問題と年号表示 -->
+        <div class="panel-row">
+            <div id="question-text">読み込み中...</div>
+            <div id="selected-year-display">???? 年</div>
+        </div>
+        <!-- 下段：ボタンと進捗 -->
+        <div class="panel-row">
+            <div id="button-group">
+                <button id="ng-button">NG</button>
+                <button id="ok-button" disabled>OK</button>
+            </div>
+            <div id="progress-counter">0 / 0</div>
         </div>
     </div>
 

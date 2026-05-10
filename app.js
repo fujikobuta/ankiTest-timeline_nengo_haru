@@ -26,8 +26,8 @@ const yearDisplay = document.getElementById('selected-year-display');
 const okButton = document.getElementById('ok-button');
 const overlay = document.getElementById('judge-overlay');
 
-// 定数 (100年 = 50px = ボタン1つ分の高さ)
-const YEAR_HEIGHT = 0.5; 
+// 定数 (1年あたりの高さ。0.38pxに圧縮してスマホでの全時代表示を狙う)
+const YEAR_HEIGHT = 0.38; 
 const STORAGE_KEY = 'chronos_timeline_progress';
 
 // 初期化
