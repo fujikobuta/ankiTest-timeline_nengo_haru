@@ -268,6 +268,7 @@ function showQuestion() {
         selectedYear = null;
         updateDisplay();
         document.querySelectorAll('.century-block').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.digit-btn').forEach(b => b.classList.remove('selected'));
         highlightHint();
     } else {
         // フェーズ2の進捗確認と終了判定
@@ -298,6 +299,7 @@ function startPhase2() {
     selectedDecade = null;
     selectedYear = null;
     document.querySelectorAll('.century-block').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.digit-btn').forEach(b => b.classList.remove('selected'));
     document.querySelectorAll('.hint').forEach(el => el.classList.remove('hint'));
     
     const labelContainer = document.getElementById('label-container');
