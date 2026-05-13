@@ -32,6 +32,9 @@ const passButton = document.getElementById('ng-button');
 const overlay = document.getElementById('judge-overlay');
 const choiceOverlay = document.getElementById('choice-overlay');
 const choiceContainer = document.getElementById('choice-container');
+const confettiContainer = document.createElement('div');
+confettiContainer.id = 'confetti-container';
+document.body.appendChild(confettiContainer);
 
 let YEAR_HEIGHT = 0.35; 
 const STORAGE_KEY = 'chronos_timeline_progress_v3';
@@ -339,6 +342,12 @@ function startPhase2() {
 function showChoices(q, marker) {
     choiceContainer.innerHTML = '';
     
+    // 現在選択中の年号をヘッダーとして表示
+    const header = document.createElement('div');
+    header.className = 'choice-header';
+    header.textContent = `${q.a} 年`;
+    choiceContainer.appendChild(header);
+    
     // 選択肢の作成（正解 + ランダムな他問題の正解）
     // M列が逆引きに該当するものすべてからプールを作成
     let pool = allQuestions.filter(item => 
@@ -446,16 +455,36 @@ function judgePhase2(isCorrect, q, marker) {
     saveProgress();
 }
 
+let overlayTimeout = null;
+
 function showOverlay(symbol, detail = "") {
-    const color = (symbol === "○" || symbol === "PASS") ? "#4cd964" : "#ff3b30";
-    overlay.innerHTML = `
-        <div style="font-size: 10rem; color: ${color}; text-shadow: 0 0 20px rgba(255,255,255,0.8); font-weight: bold; line-height: 1;">${symbol}</div>
-        <div style="font-size: 2.2rem; margin-top: 10px; color: #fff; text-shadow: 2px 2px 10px rgba(0,0,0,1), -2px -2px 10px rgba(0,0,0,1); font-weight: bold; text-align: center; padding: 0 20px;">${detail}</div>
-    `;
+    if (overlayTimeout) {
+        clearTimeout(overlayTimeout);
+        overlayTimeout = null;
+    }
+    
+    overlay.innerHTML = '';
+    if (symbol === 'hanamaru') {
+        const img = document.createElement('img');
+        img.src = 'hanamaru.png';
+        img.className = 'judge-img';
+        overlay.appendChild(img);
+    } else {
+        overlay.innerHTML = `
+            <div style="font-size: 10rem; color: ${(symbol === "○" || symbol === "PASS") ? "#4cd964" : "#ff3b30"}; text-shadow: 0 0 20px rgba(255,255,255,0.8); font-weight: bold; line-height: 1;">${symbol}</div>
+            <div style="font-size: 2.2rem; margin-top: 10px; color: #fff; text-shadow: 2px 2px 10px rgba(0,0,0,1), -2px -2px 10px rgba(0,0,0,1); font-weight: bold; text-align: center; padding: 0 20px;">${detail}</div>
+        `;
+    }
     overlay.style.flexDirection = "column";
     overlay.style.display = "flex";
     overlay.style.background = "transparent";
-    setTimeout(() => { overlay.style.display = "none"; }, detail ? 2000 : 800);
+    
+    if (symbol !== 'hanamaru') {
+        overlayTimeout = setTimeout(() => { 
+            overlay.style.display = "none"; 
+            overlayTimeout = null;
+        }, detail ? 2000 : 800);
+    }
 }
 
 function placeLabel(year, title, isCorrect, isQuiet = false) {
@@ -502,10 +531,18 @@ function showFinalResults() {
         resultText += `${q.a} ${symbol}\n`;
     });
 
-    questionText.innerHTML = `全問終了！<br><button id="line-btn" style="width:auto; padding:8px 16px; margin-top:5px; background:#00c300; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">結果をコピーしてLINE送信</button>`;
+    questionText.innerHTML = `
+        <div style="text-align: center; padding: 10px;">
+            <div style="font-size: 1.8rem; margin-bottom: 10px; font-weight: bold; color: #ff3b30;">おめでとう！全問終了！</div>
+            <button id="line-btn" style="width: auto; padding: 12px 24px; background: #00c300; color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,195,0,0.3);">結果をコピーしてLINE送信</button>
+        </div>
+    `;
     okButton.style.display = 'none';
     passButton.style.display = 'none';
-    yearDisplay.textContent = "お疲れ様でした！";
+    yearDisplay.textContent = "💮 コンプリート 💮";
+
+    showOverlay("hanamaru", "お疲れ様でした！");
+    createConfetti();
 
     const lineBtn = document.getElementById('line-btn');
     if (lineBtn) {
@@ -563,6 +600,25 @@ function highlightHint() {
     } else if (selectedYear === null) {
         const btns = yearGrid.querySelectorAll('.digit-btn');
         btns.forEach(btn => { if (parseInt(btn.textContent) === y) btn.classList.add('hint'); });
+    }
+}
+
+// 💮 紙吹雪演出
+function createConfetti() {
+    const colors = ['#ff3b30', '#ff9500', '#ffcc00', '#4cd964', '#5ac8fa', '#007aff', '#5856d6', '#ff2d55'];
+    for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.width = (Math.random() * 8 + 5) + 'px';
+        confetti.style.height = (Math.random() * 8 + 5) + 'px';
+        confetti.style.animationDelay = Math.random() * 3 + 's';
+        confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+        confettiContainer.appendChild(confetti);
+        
+        // 一定時間で削除
+        setTimeout(() => confetti.remove(), 6000);
     }
 }
 
