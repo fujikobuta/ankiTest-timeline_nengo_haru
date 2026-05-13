@@ -195,12 +195,28 @@ body {
 .edo { background-color: #FFECB3; }
 .modern { background-color: #FF9AA2; }
 
-.hint { background-color: var(--secondary-color) !important; color: #000 !important; animation: pulse 1s infinite; }
+.hint { 
+    background-color: var(--secondary-color) !important; 
+    color: #000 !important; 
+    animation: pulse 1s infinite; 
+}
+
+.choice-btn.hint {
+    background-color: #ffe082 !important;
+    border-color: #ffca28 !important;
+    animation: hint-pulse 2s infinite !important;
+}
 
 @keyframes pulse {
     0% { transform: scale(1); }
     50% { transform: scale(1.05); }
     100% { transform: scale(1); }
+}
+
+@keyframes hint-pulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 202, 40, 0.4); }
+    50% { transform: scale(1.02); box-shadow: 0 0 0 8px rgba(255, 202, 40, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 202, 40, 0); }
 }
 
 #judge-overlay {
@@ -212,4 +228,109 @@ body {
 @media (max-width: 600px) {
     .century-block { font-size: 0.75rem; }
     .digit-btn { height: 45px; }
+}
+
+/* --- 逆引きモード用スタイル --- */
+.year-marker {
+    position: absolute;
+    left: 10px;
+    background: #ff9500;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+    z-index: 10;
+    transition: transform 0.2s, background 0.3s;
+    border: 2px solid white;
+    transform: translateY(-50%);
+}
+.year-marker:active {
+    transform: translateY(-50%) scale(0.9);
+}
+@keyframes markerPulse {
+    0% { transform: translateY(-50%) scale(1); box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.7); }
+    70% { transform: translateY(-50%) scale(1.1); box-shadow: 0 0 0 10px rgba(255, 59, 48, 0); }
+    100% { transform: translateY(-50%) scale(1); box-shadow: 0 0 0 0 rgba(255, 59, 48, 0); }
+}
+
+.year-marker.active {
+    background: #ff3b30;
+    box-shadow: 0 0 12px rgba(255,59,48,0.4);
+}
+
+.year-marker.pulsing {
+    animation: markerPulse 1s ease-in-out;
+}
+
+#choice-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    z-index: 1000;
+    display: flex;
+    align-items: flex-end;
+}
+#choice-overlay.hidden {
+    display: none;
+}
+
+#choice-container {
+    background: white;
+    width: 100%;
+    max-height: 80%;
+    padding: 20px;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
+    overflow-y: auto;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+.choice-btn {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    padding: 18px 10px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    color: #333;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.2;
+}
+.choice-btn:active {
+    background: #e9ecef;
+    transform: scale(0.97);
+}
+.choice-btn.correct { background: #4cd964 !important; color: white !important; border-color: #4cd964 !important; }
+.choice-btn.wrong { background: #ff3b30 !important; color: white !important; border-color: #ff3b30 !important; }
+
+.choice-btn.pass-btn {
+    grid-column: 1 / -1;
+    background: #6c757d;
+    border-color: #6c757d;
+    color: white;
+    margin-top: 8px;
+}
+
+.choice-btn.pass-btn:active {
+    background: #5a6268;
 }
